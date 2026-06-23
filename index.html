@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dashboard integrado da Base TRC Baixo Carbono">
+  <title>Base Integrada de Mapeamento e Análise — TRC Baixo Carbono</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__content">
+      <p class="eyebrow">Observatório TRC · versão robusta intermediária</p>
+      <h1>Base Integrada de Mapeamento e Análise — TRC Baixo Carbono</h1>
+      <p class="hero__subtitle">
+        Visão integrada da base normativa federal mapeada e do radar legislativo da Câmara,
+        com níveis de validação, limites e proveniência explícitos.
+      </p>
+      <div class="hero__meta">
+        <span id="generationDate">Dados derivados em carregamento</span>
+        <span>Esfera federal · União</span>
+        <span>Sem nova coleta</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="section-nav" aria-label="Navegação das seções">
+    <a href="#universo">Universo</a>
+    <a href="#federal">Base federal</a>
+    <a href="#funil">Funil</a>
+    <a href="#camara">Câmara</a>
+    <a href="#cruzamento">Cruzamento</a>
+    <a href="#lacunas">Lacunas e agenda</a>
+    <a href="#geolocalizacao">Geolocalização</a>
+  </nav>
+
+  <main>
+    <section class="metric-grid metric-grid--hero" aria-label="Indicadores principais">
+      <article class="metric-card metric-card--primary">
+        <span class="metric-card__value">535</span>
+        <h2>itens mapeados</h2>
+        <p>92 registros normativos federais + 443 proposições legislativas</p>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__value">92</span>
+        <h2>Base normativa federal mapeada</h2>
+        <p>Três camadas metodológicas distintas</p>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__value">443</span>
+        <h2>Radar legislativo Câmara 2022–2026</h2>
+        <p>Proposições deduplicadas; sem validação de tramitação atual</p>
+      </article>
+      <article class="metric-card">
+        <span class="metric-card__value">35</span>
+        <h2>proposições diretas</h2>
+        <p>Com inteiro teor e cruzamento analítico</p>
+      </article>
+    </section>
+
+    <aside class="method-notice" role="note" aria-label="Aviso metodológico">
+      <strong>Aviso metodológico fixo.</strong>
+      Este painel visualiza camadas metodológicas do projeto TRC Baixo Carbono. A base normativa
+      federal mapeada reúne 92 registros em diferentes níveis de validação. A submatriz de validação
+      jurídica estrita contém 5 registros, mas não representa o universo mapeado. A cobertura ampliada
+      e a camada auxiliar permanecem no produto final como registros mapeados. Proposições legislativas não são direito vigente.
+    </aside>
+
+    <section id="universo" class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">01 · Universo mapeado</p>
+          <h2>Explore os 535 itens sem misturar suas naturezas documentais</h2>
+        </div>
+        <button id="exportCsv" class="button" type="button">Exportar recorte CSV</button>
+      </div>
+
+      <div class="filters" aria-label="Filtros do universo integrado">
+        <label class="filter filter--search">
+          <span>Busca</span>
+          <input id="searchFilter" type="search" placeholder="Título, ementa, número, órgão ou ID">
+        </label>
+        <label class="filter">
+          <span>Camada</span>
+          <select id="layerFilter"><option value="">Todas</option></select>
+        </label>
+        <label class="filter">
+          <span>Eixo temático</span>
+          <select id="axisFilter"><option value="">Todos</option></select>
+        </label>
+        <label class="filter">
+          <span>Status metodológico</span>
+          <select id="statusFilter"><option value="">Todos</option></select>
+        </label>
+        <label class="filter">
+          <span>Classe de relevância</span>
+          <select id="classFilter"><option value="">Todas</option></select>
+        </label>
+        <label class="filter">
+          <span>Ano</span>
+          <select id="yearFilter"><option value="">Todos</option></select>
+        </label>
+        <label class="filter">
+          <span>Risco de superinclusão</span>
+          <select id="riskFilter"><option value="">Todos</option></select>
+        </label>
+        <label class="filter">
+          <span>Tipo de relação</span>
+          <select id="relationFilter"><option value="">Todos</option></select>
+        </label>
+        <button id="clearFilters" class="button button--secondary" type="button">Limpar filtros</button>
+      </div>
+
+      <div class="result-summary">
+        <p><strong id="filteredCount">0</strong> de <span id="totalCount">535</span> itens no recorte atual.</p>
+        <p id="renderLimitNote" class="muted"></p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Natureza / camada</th>
+              <th>Ano</th>
+              <th>Eixo</th>
+              <th>Status / classe</th>
+              <th>Risco / relação</th>
+              <th>Fonte institucional</th>
+            </tr>
+          </thead>
+          <tbody id="integratedTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="federal" class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">02 · Base normativa federal mapeada</p>
+          <h2>92 registros em camadas que não são equivalentes</h2>
+        </div>
+      </div>
+      <div class="metric-grid metric-grid--three">
+        <article class="metric-card">
+          <span class="metric-card__value">5</span>
+          <h3>Submatriz de validação jurídica estrita — 5 registros</h3>
+          <p>Auditados e microauditados, todos com pendências substantivas.</p>
+        </article>
+        <article class="metric-card">
+          <span class="metric-card__value">26</span>
+          <h3>Camada auxiliar rastreável — 26 registros</h3>
+          <p>Localizados e examinados; não convertidos para a submatriz estrita.</p>
+        </article>
+        <article class="metric-card">
+          <span class="metric-card__value">61</span>
+          <h3>Cobertura federal ampliada em funil metodológico — 61 registros</h3>
+          <p>Consolidados, triados e organizados por status operacional.</p>
+        </article>
+      </div>
+      <div class="definition">
+        <strong>O que significa <code>nao_migrar</code>?</strong>
+        Ausência de conversão automática para a submatriz de validação jurídica estrita.
+        Não significa descarte, irrelevância ou exclusão do mapeamento. Os 87 registros fora
+        da submatriz permanecem na base em suas camadas metodológicas próprias.
+      </div>
+      <div class="table-wrap table-wrap--compact">
+        <table>
+          <thead><tr><th>ID</th><th>Norma</th><th>Ano</th><th>Pertinência TRC</th><th>Baixo carbono</th><th>Status</th></tr></thead>
+          <tbody id="strictTableBody"></tbody>
+        </table>
+      </div>
+      <details class="panel-details">
+        <summary class="panel-details__summary">Listar todos os 92 registros federais com camada</summary>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Norma</th><th>Ano</th><th>Camada</th><th>Órgão</th><th>Status</th></tr></thead>
+            <tbody id="federalFullTableBody"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <section id="funil" class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">03 · Funil metodológico federal</p>
+          <h2>Estado operacional da cobertura ampliada</h2>
+        </div>
+      </div>
+      <div id="funnelBars" class="bar-list" aria-label="Distribuição por status operacional"></div>
+      <p class="caption">
+        Denominador: 61 registros da cobertura federal ampliada. Os status indicam próximos passos
+        metodológicos; não certificam vigência, redação consolidada ou suficiência regulatória.
+      </p>
+    </section>
+
+    <section id="camara" class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">04 · Câmara 2022–2026</p>
+          <h2>Radar legislativo Câmara 2022–2026 — 443 proposições</h2>
+        </div>
+        <span class="status-pill status-pill--warning">Proposições ≠ direito vigente</span>
+      </div>
+
+      <div class="split-grid">
+        <div>
+          <h3>Distribuição anual</h3>
+          <div id="yearBars" class="bar-list"></div>
+        </div>
+        <div>
+          <h3>Classe de relevância preliminar</h3>
+          <div id="classBars" class="bar-list"></div>
+        </div>
+      </div>
+      <div class="metric-grid metric-grid--three">
+        <article class="metric-card metric-card--small">
+          <span class="metric-card__value">67</span>
+          <h3>Diretas preliminares examinadas</h3>
+          <p>Validação assistida por regras e ementa.</p>
+        </article>
+        <article class="metric-card metric-card--small">
+          <span class="metric-card__value">35</span>
+          <h3>Inteiro teor recuperado</h3>
+          <p>Exame assistido; não validação humana plena.</p>
+        </article>
+        <article class="metric-card metric-card--small">
+          <span class="metric-card__value">35</span>
+          <h3>Cruzamentos analíticos</h3>
+          <p>Relações temáticas cautelosas com a base federal.</p>
+        </article>
+      </div>
+
+      <!-- ─── Consulta principal: 443 proposições com paginação real ─── -->
+      <div class="query-area">
+        <h3 class="query-area__title">Consultar proposições</h3>
+        <div class="filters filters--inline" aria-label="Filtros do radar legislativo">
+          <label class="filter filter--search filter--wide">
+            <span>Busca textual</span>
+            <input id="camaraSearchFilter" type="search" placeholder="Tipo, número, ementa, eixo, classe ou status">
+          </label>
+          <label class="filter">
+            <span>Ano</span>
+            <select id="camaraYearFilter"><option value="">Todos</option></select>
+          </label>
+          <label class="filter">
+            <span>Classe de relevância</span>
+            <select id="camaraClassFilter"><option value="">Todas</option></select>
+          </label>
+          <label class="filter">
+            <span>Eixo temático</span>
+            <select id="camaraAxisFilter"><option value="">Todos</option></select>
+          </label>
+          <label class="filter">
+            <span>Status / etapa</span>
+            <select id="camaraStatusFilter"><option value="">Todos</option></select>
+          </label>
+        </div>
+        <div class="result-summary result-summary--camara">
+          <p><strong id="camaraFilteredCount">0</strong> de <span id="camaraTotalCount">443</span> proposições no recorte atual.</p>
+          <p id="camaraPageInfo" class="muted"></p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Proposição</th>
+                <th>Ano</th>
+                <th>Classe</th>
+                <th>Eixos</th>
+                <th>Status</th>
+                <th>Inteiro teor</th>
+              </tr>
+            </thead>
+            <tbody id="camaraTableBody"></tbody>
+          </table>
+        </div>
+        <div id="camaraPagination" class="pagination"></div>
+        <div class="query-area__actions">
+          <button id="camaraExportBtn" class="button button--secondary" type="button">Exportar recorte CSV (todas as páginas)</button>
+        </div>
+      </div>
+
+      <!-- ─── Tabela autônoma: 35 pós-inteiro teor ─── -->
+      <details class="panel-details" open>
+        <summary class="panel-details__summary">35 proposições diretas com inteiro teor examinado</summary>
+        <div class="method-notice method-notice--compact">
+          <strong>Alerta metodológico.</strong>
+          O exame de inteiro teor foi assistido (automatizado com pdftotext + regras), não é validação humana plena.
+          Proposições não são direito vigente.
+          O <strong>PL 2917/2023</strong> (pedagiômetros) permanece como caso prioritário de validação humana
+          por risco moderado de superinclusão.
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Proposição</th>
+                <th>Ano</th>
+                <th>Eixos</th>
+                <th>Classe pós-inteiro teor</th>
+                <th>Status do exame</th>
+                <th>Risco de superinclusão</th>
+                <th>Alerta</th>
+                <th>PDF</th>
+              </tr>
+            </thead>
+            <tbody id="inteiroTeorTableBody"></tbody>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <section id="cruzamento" class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">05 · Cruzamento Câmara × federal</p>
+          <h2>35 proposições diretas com inteiro teor e cruzamento analítico</h2>
+        </div>
+      </div>
+      <div class="split-grid">
+        <div>
+          <h3>Tipo de relação</h3>
+          <div id="relationBars" class="bar-list"></div>
+        </div>
+        <div>
+          <h3>Risco de superinclusão</h3>
+          <div id="riskBars" class="bar-list"></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Proposição</th><th>Ano</th><th>Eixo regulatório</th><th>Tipo de relação</th><th>Risco revisado</th><th>Observação</th></tr></thead>
+          <tbody id="crossTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="lacunas" class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">06 · Lacunas, riscos e agenda</p>
+          <h2>Hipóteses analíticas e continuidade documentada</h2>
+        </div>
+      </div>
+      <div class="insight-grid">
+        <article class="insight-card">
+          <span class="insight-card__tag">Lacunas potenciais</span>
+          <h3>6 hipóteses identificadas</h3>
+          <p id="gapFinding"></p>
+          <small>Ausência na cobertura examinada não comprova inexistência normativa.</small>
+        </article>
+        <article class="insight-card insight-card--alert">
+          <span class="insight-card__tag">Risco prioritário</span>
+          <h3>PL 2917/2023</h3>
+          <p>Risco moderado mantido; pertinência com TRC existe, mas conexão com baixo carbono é indireta e não verificada.</p>
+          <small>Validação humana prioritária registrada na revisão focalizada.</small>
+        </article>
+        <article class="insight-card">
+          <span class="insight-card__tag">Agenda imediata</span>
+          <h3>Próximos passos</h3>
+          <p>Pacote 2 para 31 registros aptos; resolução de 13 quarentenas e 8 bloqueios; verificação das hipóteses RN ANEEL 1.000/2021 e Lei 14.993/2024.</p>
+          <small>Senado e UF-0 permanecem como expansões futuras, fora desta tarefa.</small>
+        </article>
+      </div>
+      <div class="table-wrap" style="margin-top:18px;">
+        <table>
+          <thead><tr><th>ID</th><th>Bloco</th><th>Descrição</th><th>Próximo passo</th></tr></thead>
+          <tbody id="gapsTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="geolocalizacao" class="panel">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">07 · Geolocalização federativa/institucional</p>
+          <h2>Alcance nacional sem replicação artificial por UF</h2>
+        </div>
+        <span class="status-pill">Territorialização: União / BR</span>
+      </div>
+      <div class="geo-layout">
+        <div class="br-marker" aria-label="Brasil, esfera União">
+          <span>BR</span>
+          <strong>Esfera União</strong>
+          <small>Sem coordenadas estaduais ou municipais atribuídas</small>
+        </div>
+        <div>
+          <p>
+            Nesta versão, geolocalização significa vinculação federativa e institucional:
+            esfera federal, órgão responsável, fonte e eixo regulatório. Normas nacionais não
+            são distribuídas pelas 27 unidades federativas.
+          </p>
+          <div id="institutionBars" class="bar-list bar-list--dense"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Fontes oficiais e integridade (versão pública) ─── -->
+    <section class="panel panel--provenance">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Auditoria do artefato derivado</p>
+          <h2>Fontes oficiais e integridade</h2>
+        </div>
+      </div>
+      <p class="provenance-intro">
+        As URLs oficiais disponíveis são exibidas por registro — especialmente para atos normativos
+        (Planalto, DOU), proposições legislativas (Câmara dos Deputados) e inteiro teórico
+        (PDFs oficiais). Os hashes SHA-256 listados abaixo indicam apenas a integridade dos
+        artefatos derivados usados pelo dashboard e não substituem as fontes oficiais.
+        Este dashboard não certifica vigência, redação consolidada, revogação ou tramitação atual.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fonte oficial</th><th>SHA-256 (controle de integridade do artefato derivado)</th></tr></thead>
+          <tbody id="sourceTableBody"></tbody>
+        </table>
+      </div>
+      <div class="definition">
+        <strong>Registros sem URL oficial individual.</strong>
+        Quando um registro não possui URL oficial individual disponível no artefato derivado,
+        a fonte institucional está indicada na base metodológica e o registro é preservado como
+        mapeado. A validação documental individual depende de consulta à base original do órgão.
+      </div>
+      <p class="caption">
+        Este dashboard não substitui as bases originais, não realiza coleta, não certifica vigência
+        e não atualiza tramitação legislativa. Proposições legislativas não são direito vigente.
+      </p>
+    </section>
+
+    <div id="loadError" class="load-error" hidden>
+      Não foi possível carregar o arquivo derivado. Abra o dashboard por um servidor HTTP local,
+      conforme o README.
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <p>TRC Baixo Carbono · artefato estático derivado · sem backend, banco de dados ou API novos.</p>
+  </footer>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>
