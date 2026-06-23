@@ -258,7 +258,7 @@ td a { color: var(--blue); font-weight: 750; text-decoration: none; }
 .filters--inline { margin-top: 0; }
 
 .status-pill { flex: 0 0 auto; padding: 6px 10px; border-radius: 999px; color: #245441; background: var(--green-soft); font-size: .7rem; font-weight: 800; }
-.status-pill--warning { color: #70450c; background: var(--amber-soft); }
+.status-pill--info { color: #1f5a77; background: #daeaf5; }
 .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .insight-card { padding: 19px; border: 1px solid var(--line); border-radius: 14px; background: white; }
 .insight-card--alert { border-color: #e3b5af; background: #fff7f5; }

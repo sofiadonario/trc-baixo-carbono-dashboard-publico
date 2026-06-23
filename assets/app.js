@@ -28,13 +28,13 @@ const labels = {
   sobreposicao_tematica_com_matriz_principal_e_cobertura_ampliada: "Sobreposição com submatriz e ampliada",
   sem_relacao_normativa_identificada: "Sem relação identificada",
   tema_emergente_sem_norma_correspondente_identificada: "Tema emergente",
-  checklist_inicial_criado_pendente_revisao_material: "Checklist criado; revisão material pendente",
-  manter_em_quarentena_metodologica: "Quarentena metodológica",
-  fora_do_fluxo_curto_contextual: "Fora do fluxo curto — contextual",
-  fora_do_fluxo_curto_por_inconsistencia_tematica: "Fora do fluxo — inconsistência temática",
-  pendente_validacao_humana: "Validação humana pendente",
-  bloqueado_pendente_ato_direto: "Bloqueado — ato direto pendente",
-  preparacao_pacote_3_incompleta_pendente_retificacao: "Pré-Pacote 3 — retificação pendente",
+  checklist_inicial_criado_pendente_revisao_material: "Checklist criado",
+  manter_em_quarentena_metodologica: "Em análise metodológica",
+  fora_do_fluxo_curto_contextual: "Registro contextual",
+  fora_do_fluxo_curto_por_inconsistencia_tematica: "Inconsistência temática",
+  pendente_validacao_humana: "Validação humana",
+  bloqueado_pendente_ato_direto: "Ato direto necessário",
+  preparacao_pacote_3_incompleta_pendente_retificacao: "Retificação necessária",
 };
 
 const byId = (id) => document.getElementById(id);
@@ -257,16 +257,6 @@ function renderStaticSections(data) {
       <td>${escapeHtml(pretty(item.status_metodologico))}</td>
     </tr>
   `).join("");
-
-  const summary = data.federal.fechamento.sumario;
-  renderBars("funnelBars", {
-    checklist_inicial_criado_pendente_revisao_material: summary.registros_aptos_P2,
-    manter_em_quarentena_metodologica: summary.registros_quarentena,
-    bloqueado_pendente_ato_direto: summary.registros_bloqueados,
-    fora_do_fluxo_curto_contextual: summary.registros_fora_fluxo,
-    pendente_validacao_humana: summary.registros_pendentes_humanos,
-    preparacao_pacote_3_incompleta_pendente_retificacao: summary.registros_pre_pacote_3,
-  }, 61);
 
   renderBars("yearBars", countBy(data.camara.radar, (item) => item.ano), 115);
   renderBars("classBars", countBy(data.camara.radar, (item) => item.classe_relevancia), 152);
@@ -623,6 +613,42 @@ function renderInteiroTeorTable(data) {
 }
 
 // ──────────────────────────────────────────
+// COBERTURA NORMTIVA FEDERAL AMPLIADA
+// ──────────────────────────────────────────
+
+function renderCoberturaAmpliada(data) {
+  const records = data.federal.cobertura_ampliada;
+  // Group by eixo_tematico
+  const groups = {};
+  records.forEach((item) => {
+    const eixo = pretty(item.eixo_tematico) || "Sem eixo";
+    if (!groups[eixo]) groups[eixo] = 0;
+    groups[eixo]++;
+  });
+
+  // Render eixo summary bars
+  renderBars("coberturaEixos", groups, 61);
+
+  // Render table sorted by eixo, then title
+  const sorted = [...records].sort((a, b) => {
+    const ea = pretty(a.eixo_tematico) || "";
+    const eb = pretty(b.eixo_tematico) || "";
+    if (ea !== eb) return ea.localeCompare(eb, "pt-BR");
+    return (a.titulo || "").localeCompare(b.titulo || "", "pt-BR");
+  });
+
+  byId("coberturaTableBody").innerHTML = sorted.map((item) => `
+    <tr>
+      <td>${escapeHtml(item.id)}</td>
+      <td>${escapeHtml(item.titulo)}</td>
+      <td>${escapeHtml(item.ano)}</td>
+      <td>${escapeHtml(pretty(item.eixo_tematico))}</td>
+      <td>${escapeHtml(item.orgao || item.fonte || "")}</td>
+    </tr>
+  `).join("");
+}
+
+// ──────────────────────────────────────────
 // INIT
 // ──────────────────────────────────────────
 
@@ -639,6 +665,7 @@ async function init() {
     renderFederalFullTable(state.data);
     renderCamaraTable(state.data);
     renderInteiroTeorTable(state.data);
+    renderCoberturaAmpliada(state.data);
     renderGapsTable(state.data);
   } catch (error) {
     byId("loadError").hidden = false;

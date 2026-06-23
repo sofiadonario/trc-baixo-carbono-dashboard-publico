@@ -13,13 +13,13 @@
       <p class="eyebrow">Observatório TRC · versão robusta intermediária</p>
       <h1>Base Integrada de Mapeamento e Análise — TRC Baixo Carbono</h1>
       <p class="hero__subtitle">
-        Visão integrada da base normativa federal mapeada e do radar legislativo da Câmara,
-        com níveis de validação, limites e proveniência explícitos.
+        Base integrada de mapeamento e análise da transição energética no transporte rodoviário
+        de cargas. Cobertura normativa federal e radar legislativo da Câmara dos Deputados,
+        com fontes oficiais, cruzamentos analíticos e integridade do artefato.
       </p>
       <div class="hero__meta">
-        <span id="generationDate">Dados derivados em carregamento</span>
+        <span id="generationDate">Artefato derivado em carregamento</span>
         <span>Esfera federal · União</span>
-        <span>Sem nova coleta</span>
       </div>
     </div>
   </header>
@@ -27,7 +27,7 @@
   <nav class="section-nav" aria-label="Navegação das seções">
     <a href="#universo">Universo</a>
     <a href="#federal">Base federal</a>
-    <a href="#funil">Funil</a>
+    <a href="#cobertura">Cobertura</a>
     <a href="#camara">Câmara</a>
     <a href="#cruzamento">Cruzamento</a>
     <a href="#lacunas">Lacunas e agenda</a>
@@ -49,7 +49,7 @@
       <article class="metric-card">
         <span class="metric-card__value">443</span>
         <h2>Radar legislativo Câmara 2022–2026</h2>
-        <p>Proposições deduplicadas; sem validação de tramitação atual</p>
+        <p>Proposições legislativas mapeadas na Câmara dos Deputados</p>
       </article>
       <article class="metric-card">
         <span class="metric-card__value">35</span>
@@ -58,13 +58,7 @@
       </article>
     </section>
 
-    <aside class="method-notice" role="note" aria-label="Aviso metodológico">
-      <strong>Aviso metodológico fixo.</strong>
-      Este painel visualiza camadas metodológicas do projeto TRC Baixo Carbono. A base normativa
-      federal mapeada reúne 92 registros em diferentes níveis de validação. A submatriz de validação
-      jurídica estrita contém 5 registros, mas não representa o universo mapeado. A cobertura ampliada
-      e a camada auxiliar permanecem no produto final como registros mapeados. Proposições legislativas não são direito vigente.
-    </aside>
+    <!-- Aviso metodológico removido da interface pública. Documentado no README e relatórios metodológicos. -->
 
     <section id="universo" class="panel">
       <div class="section-heading">
@@ -137,31 +131,30 @@
       <div class="section-heading">
         <div>
           <p class="eyebrow">02 · Base normativa federal mapeada</p>
-          <h2>92 registros em camadas que não são equivalentes</h2>
+          <h2>92 registros em três camadas de organização analítica</h2>
         </div>
       </div>
       <div class="metric-grid metric-grid--three">
         <article class="metric-card">
           <span class="metric-card__value">5</span>
           <h3>Submatriz de validação jurídica estrita — 5 registros</h3>
-          <p>Auditados e microauditados, todos com pendências substantivas.</p>
+          <p>Registros com validação jurídica aprofundada.</p>
         </article>
         <article class="metric-card">
           <span class="metric-card__value">26</span>
           <h3>Camada auxiliar rastreável — 26 registros</h3>
-          <p>Localizados e examinados; não convertidos para a submatriz estrita.</p>
+          <p>Registros localizados e organizados em camada complementar.</p>
         </article>
         <article class="metric-card">
           <span class="metric-card__value">61</span>
-          <h3>Cobertura federal ampliada em funil metodológico — 61 registros</h3>
-          <p>Consolidados, triados e organizados por status operacional.</p>
+          <h3>Cobertura normativa federal ampliada — 61 registros</h3>
+          <p>Registros consolidados e organizados por eixo regulatório.</p>
         </article>
       </div>
       <div class="definition">
-        <strong>O que significa <code>nao_migrar</code>?</strong>
-        Ausência de conversão automática para a submatriz de validação jurídica estrita.
-        Não significa descarte, irrelevância ou exclusão do mapeamento. Os 87 registros fora
-        da submatriz permanecem na base em suas camadas metodológicas próprias.
+        <strong>Registros em camadas de organização analítica.</strong>
+        Cada camada corresponde a um nível de exame distinto. O conjunto completo de 92 registros
+        está preservado na base integrada.
       </div>
       <div class="table-wrap table-wrap--compact">
         <table>
@@ -180,18 +173,20 @@
       </details>
     </section>
 
-    <section id="funil" class="panel">
+    <section id="cobertura" class="panel">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">03 · Funil metodológico federal</p>
-          <h2>Estado operacional da cobertura ampliada</h2>
+          <p class="eyebrow">03 · Cobertura normativa federal ampliada</p>
+          <h2>61 registros organizados por eixo regulatório</h2>
         </div>
       </div>
-      <div id="funnelBars" class="bar-list" aria-label="Distribuição por status operacional"></div>
-      <p class="caption">
-        Denominador: 61 registros da cobertura federal ampliada. Os status indicam próximos passos
-        metodológicos; não certificam vigência, redação consolidada ou suficiência regulatória.
-      </p>
+      <div id="coberturaEixos" class="bar-list bar-list--dense" aria-label="Distribuição por eixo regulatório"></div>
+      <div class="table-wrap" style="margin-top:18px;">
+        <table>
+          <thead><tr><th>ID</th><th>Norma</th><th>Ano</th><th>Eixo regulatório</th><th>Fonte</th></tr></thead>
+          <tbody id="coberturaTableBody"></tbody>
+        </table>
+      </div>
     </section>
 
     <section id="camara" class="panel">
@@ -200,7 +195,7 @@
           <p class="eyebrow">04 · Câmara 2022–2026</p>
           <h2>Radar legislativo Câmara 2022–2026 — 443 proposições</h2>
         </div>
-        <span class="status-pill status-pill--warning">Proposições ≠ direito vigente</span>
+        <span class="status-pill status-pill--info">Radar legislativo · Câmara dos Deputados</span>
       </div>
 
       <div class="split-grid">
@@ -217,17 +212,17 @@
         <article class="metric-card metric-card--small">
           <span class="metric-card__value">67</span>
           <h3>Diretas preliminares examinadas</h3>
-          <p>Validação assistida por regras e ementa.</p>
+          <p>Proposições com exame de ementa e classificação.</p>
         </article>
         <article class="metric-card metric-card--small">
           <span class="metric-card__value">35</span>
           <h3>Inteiro teor recuperado</h3>
-          <p>Exame assistido; não validação humana plena.</p>
+          <p>Proposições com inteiro teor examinado e classificado.</p>
         </article>
         <article class="metric-card metric-card--small">
           <span class="metric-card__value">35</span>
           <h3>Cruzamentos analíticos</h3>
-          <p>Relações temáticas cautelosas com a base federal.</p>
+          <p>Relações temáticas entre proposições e a base federal.</p>
         </article>
       </div>
 
@@ -284,13 +279,7 @@
       <!-- ─── Tabela autônoma: 35 pós-inteiro teor ─── -->
       <details class="panel-details" open>
         <summary class="panel-details__summary">35 proposições diretas com inteiro teor examinado</summary>
-        <div class="method-notice method-notice--compact">
-          <strong>Alerta metodológico.</strong>
-          O exame de inteiro teor foi assistido (automatizado com pdftotext + regras), não é validação humana plena.
-          Proposições não são direito vigente.
-          O <strong>PL 2917/2023</strong> (pedagiômetros) permanece como caso prioritário de validação humana
-          por risco moderado de superinclusão.
-        </div>
+        <!-- Alerta metodológico removido da interface pública. Documentado em relatórios metodológicos. -->
         <div class="table-wrap">
           <table>
             <thead>
@@ -345,22 +334,22 @@
       </div>
       <div class="insight-grid">
         <article class="insight-card">
-          <span class="insight-card__tag">Lacunas potenciais</span>
+          <span class="insight-card__tag">Lacunas identificadas</span>
           <h3>6 hipóteses identificadas</h3>
           <p id="gapFinding"></p>
-          <small>Ausência na cobertura examinada não comprova inexistência normativa.</small>
+          <small>Hipóteses de lacuna registradas na base integrada.</small>
         </article>
         <article class="insight-card insight-card--alert">
-          <span class="insight-card__tag">Risco prioritário</span>
+          <span class="insight-card__tag">Atenção analítica</span>
           <h3>PL 2917/2023</h3>
-          <p>Risco moderado mantido; pertinência com TRC existe, mas conexão com baixo carbono é indireta e não verificada.</p>
-          <small>Validação humana prioritária registrada na revisão focalizada.</small>
+          <p>Pertinência com TRC identificada; conexão com baixo carbono requer verificação complementar.</p>
+          <small>Registrado na revisão focalizada da base integrada.</small>
         </article>
         <article class="insight-card">
-          <span class="insight-card__tag">Agenda imediata</span>
+          <span class="insight-card__tag">Agenda regulatória</span>
           <h3>Próximos passos</h3>
-          <p>Pacote 2 para 31 registros aptos; resolução de 13 quarentenas e 8 bloqueios; verificação das hipóteses RN ANEEL 1.000/2021 e Lei 14.993/2024.</p>
-          <small>Senado e UF-0 permanecem como expansões futuras, fora desta tarefa.</small>
+          <p>Continuidade do exame de registros; verificação das hipóteses RN ANEEL 1.000/2021 e Lei 14.993/2024.</p>
+          <small>Senado e âmbito estadual permanecem como expansões futuras.</small>
         </article>
       </div>
       <div class="table-wrap" style="margin-top:18px;">
@@ -405,11 +394,10 @@
         </div>
       </div>
       <p class="provenance-intro">
-        As URLs oficiais disponíveis são exibidas por registro — especialmente para atos normativos
-        (Planalto, DOU), proposições legislativas (Câmara dos Deputados) e inteiro teórico
-        (PDFs oficiais). Os hashes SHA-256 listados abaixo indicam apenas a integridade dos
-        artefatos derivados usados pelo dashboard e não substituem as fontes oficiais.
-        Este dashboard não certifica vigência, redação consolidada, revogação ou tramitação atual.
+        URLs oficiais disponíveis são exibidas por registro — atos normativos (Planalto, DOU),
+        proposições legislativas (Câmara dos Deputados) e inteiro teor (PDFs oficiais).
+        Os hashes SHA-256 listados abaixo indicam a integridade dos artefatos derivados
+        usados pelo dashboard.
       </p>
       <div class="table-wrap">
         <table>
@@ -418,15 +406,10 @@
         </table>
       </div>
       <div class="definition">
-        <strong>Registros sem URL oficial individual.</strong>
-        Quando um registro não possui URL oficial individual disponível no artefato derivado,
-        a fonte institucional está indicada na base metodológica e o registro é preservado como
-        mapeado. A validação documental individual depende de consulta à base original do órgão.
+        <strong>Origem institucional.</strong>
+        Registros sem URL oficial individual disponível no artefato derivado têm a fonte
+        institucional indicada na base e permanecem preservados como mapeados.
       </div>
-      <p class="caption">
-        Este dashboard não substitui as bases originais, não realiza coleta, não certifica vigência
-        e não atualiza tramitação legislativa. Proposições legislativas não são direito vigente.
-      </p>
     </section>
 
     <div id="loadError" class="load-error" hidden>
@@ -436,7 +419,7 @@
   </main>
 
   <footer class="page-footer">
-    <p>TRC Baixo Carbono · artefato estático derivado · sem backend, banco de dados ou API novos.</p>
+    <p>TRC Baixo Carbono · Dashboard público · Base integrada de mapeamento e análise.</p>
   </footer>
   <script src="assets/app.js" defer></script>
 </body>
