@@ -1,0 +1,79 @@
+{
+  "descricao": "Sondagem técnica estadual UF-2E — resultado da consulta pública mínima em 27 UFs após microtestes técnicos de coleta estadual",
+  "data_geracao": "2026-06-24",
+  "resumo": {
+    "total_ufs_investigadas": 27,
+    "rotas_produtivas_confirmadas": 3,
+    "rotas_produtivas_alto_ruido": 1,
+    "rotas_funcionais_sem_produtividade_imediata": 18,
+    "rotas_com_friccao_tecnica": 1,
+    "rotas_a_revalidar": 4
+  },
+  "ranking_prioritario": [
+    {
+      "prioridade": 1,
+      "uf": "PE",
+      "nome": "Pernambuco",
+      "rota": "Alepe Legis",
+      "classificacao": "rota produtiva",
+      "proximo_passo": "aprofundamento controlado da rota produtiva"
+    },
+    {
+      "prioridade": 2,
+      "uf": "PI",
+      "nome": "Piauí",
+      "rota": "SAPL — módulo matéria legislativa",
+      "classificacao": "rota produtiva e replicável",
+      "proximo_passo": "aprofundamento controlado da rota produtiva"
+    },
+    {
+      "prioridade": 3,
+      "uf": "RR",
+      "nome": "Roraima",
+      "rota": "ALE-RR",
+      "classificacao": "rota produtiva, baixo volume",
+      "proximo_passo": "reconsulta com termos alternativos"
+    },
+    {
+      "prioridade": 4,
+      "uf": "MG",
+      "nome": "Minas Gerais",
+      "rota": "ALMG",
+      "classificacao": "rota produtiva com alto ruído",
+      "proximo_passo": "refinamento de termo e redução de ruído antes de coleta ampliada"
+    }
+  ],
+  "grupos": [
+    {
+      "grupo": "Rotas produtivas confirmadas",
+      "quantidade": 3,
+      "ufs": ["PE", "PI", "RR"],
+      "descricao": "Portais legislativos que retornaram resultados de busca para termos TRC via consulta GET simples. Prioridade máxima para aprofundamento."
+    },
+    {
+      "grupo": "Rota produtiva com alto ruído",
+      "quantidade": 1,
+      "ufs": ["MG"],
+      "descricao": "Portal com 44.600 resultados para termo amplo (transporte). Requer refino terminológico para reduzir ruído antes de coleta ampliada."
+    },
+    {
+      "grupo": "Rotas funcionais sem produtividade imediata por GET simples",
+      "quantidade": 18,
+      "ufs": ["AC", "AL", "AP", "BA", "CE", "GO", "MA", "MS", "MT", "PA", "PB", "PR", "RN", "RO", "RS", "SC", "SE", "TO"],
+      "descricao": "Portais com HTTP 200, mas consultas GET simples não expuseram resultados parseáveis. Exigem POST com viewstate ou browser automation."
+    },
+    {
+      "grupo": "Rota com fricção técnica (JS/POST)",
+      "quantidade": 1,
+      "ufs": ["DF"],
+      "descricao": "Portal SPA (Liferay) com resultados renderizados dinamicamente por JavaScript. Requer browser automation para consulta."
+    },
+    {
+      "grupo": "Rotas a revalidar",
+      "quantidade": 4,
+      "ufs": ["AM", "ES", "RJ", "SP"],
+      "descricao": "Portais legislativos que se mostraram indisponíveis durante a sondagem. Revalidar disponibilidade antes de nova tentativa."
+    }
+  ],
+  "nota_metodologica": "Sondagem técnica mínima: 1 a 2 termos por UF (biodiesel e/ou transporte), 1 a 2 URLs, método GET simples, sem automação ou paginação. Nenhuma validação de mérito, vigência ou pertinência foi realizada. Classificação baseada exclusivamente na resposta HTTP e na presença aparente de resultados na página. Dados refletem recorte temporal único (24/jun/2026). As 18 rotas funcionais sem produtividade imediata podem ter acervo relevante acessível por métodos alternativos de consulta."
+}

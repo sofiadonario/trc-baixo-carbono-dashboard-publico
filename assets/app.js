@@ -628,6 +628,7 @@ function renderInteiroTeorTable(data) {
 
 const COBERTURA_URL = "data/cobertura_estadual_piloto_uf0.json";
 const GEO_URL = "data/brazil_states_simplified.geojson";
+const SONDAGEM_UF2E_URL = "data/sondagem_estadual_uf2e_publica.json";
 
 let coberturaData = null;
 let geoData = null;
@@ -959,6 +960,77 @@ function renderUfCards() {
 }
 
 // ──────────────────────────────────────────
+// SONDAGEM UF-2E
+// ──────────────────────────────────────────
+
+function renderSondagemUf2e(data) {
+  if (!data) return;
+
+  // Resumo cards
+  const r = data.resumo;
+  byId("sondagemResumo").innerHTML = `
+    <article class="metric-card metric-card--small sondagem-card sondagem-card--produtiva">
+      <span class="metric-card__value">${r.rotas_produtivas_confirmadas + r.rotas_produtivas_alto_ruido}</span>
+      <h3>rotas produtivas</h3>
+      <p>${r.rotas_produtivas_confirmadas} confirmadas${r.rotas_produtivas_alto_ruido ? " + 1 com alto ruído (MG)" : ""}</p>
+    </article>
+    <article class="metric-card metric-card--small sondagem-card sondagem-card--improdutiva">
+      <span class="metric-card__value">${r.rotas_funcionais_sem_produtividade_imediata + r.rotas_com_friccao_tecnica}</span>
+      <h3>rotas sem produtividade imediata</h3>
+      <p>${r.rotas_funcionais_sem_produtividade_imediata} GET simples + ${r.rotas_com_friccao_tecnica} com fricção JS</p>
+    </article>
+    <article class="metric-card metric-card--small sondagem-card sondagem-card--revalidar">
+      <span class="metric-card__value">${r.rotas_a_revalidar}</span>
+      <h3>rotas a revalidar</h3>
+      <p>AM, ES, RJ, SP — indisponíveis durante a sondagem</p>
+    </article>
+    <article class="metric-card metric-card--small sondagem-card sondagem-card--total">
+      <span class="metric-card__value">${r.total_ufs_investigadas}</span>
+      <h3>UFs investigadas</h3>
+      <p>Todas as 27 unidades federativas</p>
+    </article>
+    <article class="metric-card metric-card--small sondagem-card sondagem-card--metodo">
+      <span class="metric-card__value">GET</span>
+      <h3>método de consulta</h3>
+      <p>1–2 termos por UF, sem automação ou validação</p>
+    </article>
+  `;
+
+  // Ranking prioritario
+  byId("sondagemRanking").innerHTML = `
+    <h4 class="sondagem-ranking__title">Ranking prioritário para aprofundamento</h4>
+    <div class="sondagem-ranking__list">
+      ${data.ranking_prioritario.map((item) => `
+        <article class="sondagem-ranking__item sondagem-ranking__item--p${item.prioridade}">
+          <span class="sondagem-ranking__pos">#${item.prioridade}</span>
+          <div class="sondagem-ranking__info">
+            <strong>${escapeHtml(item.uf)} — ${escapeHtml(item.nome)}</strong>
+            <span class="sondagem-ranking__rota">${escapeHtml(item.rota)}</span>
+            <span class="sondagem-ranking__class">${escapeHtml(item.classificacao)}</span>
+            <span class="sondagem-ranking__passo">Próximo passo: ${escapeHtml(item.proximo_passo)}</span>
+          </div>
+        </article>
+      `).join("")}
+    </div>
+  `;
+
+  // Grupos detalhados
+  byId("sondagemGrupos").innerHTML = data.grupos.map((g) => `
+    <article class="sondagem-grupo">
+      <h4 class="sondagem-grupo__title">
+        ${escapeHtml(g.grupo)}
+        <span class="sondagem-grupo__count">${g.quantidade} UF${g.quantidade !== 1 ? "s" : ""}</span>
+      </h4>
+      <p class="sondagem-grupo__desc">${escapeHtml(g.descricao)}</p>
+      <p class="sondagem-grupo__ufs"><strong>UFs:</strong> ${g.ufs.join(", ")}</p>
+    </article>
+  `).join("");
+
+  // Nota metodologica
+  byId("sondagemNota").textContent = data.nota_metodologica;
+}
+
+// ──────────────────────────────────────────
 // INIT
 // ──────────────────────────────────────────
 
@@ -994,6 +1066,16 @@ async function init() {
     renderBrazilMap();
   } catch (error) {
     console.error("Falha ao carregar dados de cobertura estadual:", error);
+  }
+
+  // Load UF-2E sondagem data
+  try {
+    const sondResp = await fetch(SONDAGEM_UF2E_URL);
+    if (!sondResp.ok) throw new Error(`Sondagem HTTP ${sondResp.status}`);
+    const sondData = await sondResp.json();
+    renderSondagemUf2e(sondData);
+  } catch (error) {
+    console.error("Falha ao carregar dados de sondagem UF-2E:", error);
   }
 }
 

@@ -445,7 +445,7 @@ td a { color: var(--blue); font-weight: 750; text-decoration: none; }
   .hero { padding: 44px 18px 62px; }
   main { padding: 0 14px 40px; }
   .panel { padding: 20px 16px; }
-  .metric-grid--hero, .metric-grid--three, .metric-grid--four, .metric-grid--two, .insight-grid, .split-grid, .geo-layout { grid-template-columns: 1fr; }
+  .metric-grid--hero, .metric-grid--three, .metric-grid--four, .metric-grid--two, .metric-grid--five, .insight-grid, .split-grid, .geo-layout { grid-template-columns: 1fr; }
   .filters { grid-template-columns: 1fr; }
   .filter--search, .filter--wide { grid-column: auto; }
   .section-heading { flex-direction: column; }
@@ -457,4 +457,113 @@ td a { color: var(--blue); font-weight: 750; text-decoration: none; }
   .card-uf { flex-direction: column; text-align: center; }
   .card-uf__sigla { margin: 0 auto; }
   .map-tooltip { font-size: .72rem; }
+}
+
+/* ─── Sondagem UF-2E ─── */
+.sondagem-section {
+  margin: 28px 0 18px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.sondagem-section__title {
+  margin: 0 0 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.3rem;
+  color: var(--green);
+}
+.sondagem-section__subtitle {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: .86rem;
+}
+.metric-grid--five { grid-template-columns: repeat(5, 1fr); }
+.sondagem-card { border-top-color: var(--blue); }
+.sondagem-card--improdutiva { border-top-color: var(--amber); }
+.sondagem-card--revalidar { border-top-color: var(--red); }
+.sondagem-card--total { border-top-color: var(--green); }
+.sondagem-card--metodo { border-top-color: var(--muted); }
+.sondagem-card p { font-size: .76rem; }
+.sondagem-ranking { margin-top: 22px; }
+.sondagem-ranking__title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+.sondagem-ranking__list {
+  display: grid;
+  gap: 10px;
+}
+.sondagem-ranking__item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green);
+  border-radius: 12px;
+  background: var(--surface-strong);
+}
+.sondagem-ranking__item--p1 { border-left-color: var(--green); }
+.sondagem-ranking__item--p2 { border-left-color: var(--green-2); }
+.sondagem-ranking__item--p3 { border-left-color: var(--blue); }
+.sondagem-ranking__item--p4 { border-left-color: var(--amber); }
+.sondagem-ranking__pos {
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--green);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: .85rem;
+  font-weight: 800;
+}
+.sondagem-ranking__item--p2 .sondagem-ranking__pos { background: var(--green-2); }
+.sondagem-ranking__item--p3 .sondagem-ranking__pos { background: var(--blue); }
+.sondagem-ranking__item--p4 .sondagem-ranking__pos { background: var(--amber); }
+.sondagem-ranking__info strong { display: block; font-size: .92rem; }
+.sondagem-ranking__info span { display: block; margin-top: 2px; color: var(--muted); font-size: .78rem; }
+.sondagem-ranking__passo { font-weight: 700; color: var(--ink) !important; }
+.sondagem-grupos {
+  padding: 16px 18px;
+  display: grid;
+  gap: 14px;
+}
+.sondagem-grupo {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-strong);
+}
+.sondagem-grupo__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 6px;
+  font-size: .9rem;
+}
+.sondagem-grupo__count {
+  padding: 2px 9px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--green);
+  font-size: .72rem;
+  font-weight: 800;
+}
+.sondagem-grupo__desc { margin: 0 0 6px; color: var(--muted); font-size: .8rem; }
+.sondagem-grupo__ufs { margin: 0; font-size: .78rem; }
+.sondagem-section__nota {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--muted);
+  border-radius: 6px;
+  background: #f0f2ef;
+  color: var(--muted);
+  font-size: .76rem;
+  line-height: 1.5;
 }

@@ -415,13 +415,30 @@
         <div id="mapTooltip" class="map-tooltip" hidden></div>
       </div>
       <div id="mapLegend" class="map-legend" aria-label="Legenda do mapa"></div>
+
+      <div id="sondagemSection" class="sondagem-section">
+        <h3 class="sondagem-section__title">Sondagem técnica estadual (UF-2E)</h3>
+        <p class="sondagem-section__subtitle">
+          Resultado da consulta técnica mínima em 27 UFs: rotas produtivas, rotas com fricção
+          e rotas a revalidar. Dados de junho de 2026.
+        </p>
+        <div id="sondagemResumo" class="metric-grid metric-grid--five" aria-label="Totais da sondagem técnica"></div>
+        <div id="sondagemRanking" class="sondagem-ranking" aria-label="Ranking prioritário"></div>
+        <details class="panel-details" id="sondagemDetalhes">
+          <summary class="panel-details__summary">Ver detalhamento por grupo de UF</summary>
+          <div id="sondagemGrupos" class="sondagem-grupos"></div>
+        </details>
+        <p class="sondagem-section__nota" id="sondagemNota"></p>
+      </div>
+
       <p class="caption">
         Fonte: atas de órgãos ambientais estaduais (SP: CETESB; MG: SEMAD/COPAM);
         reconsultas via portal ALESP e API ALMG. Rotas oficiais inventariadas para
         as 25 UFs sem candidatos com base em pesquisa exploratória de portais
         legislativos, diários oficiais, secretarias e órgãos ambientais — sem
         coleta de corpus ou validação substantiva. A camada estadual é independente
-        da base federal.
+        da base federal. Sondagem técnica UF-2E: microtestes de GET simples em portais
+        legislativos estaduais; sem validação de mérito, vigência ou pertinência.
       </p>
     </section>
 
