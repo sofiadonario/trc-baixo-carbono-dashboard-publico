@@ -637,18 +637,21 @@ function getUfColor(sigla) {
   if (!coberturaData) return "#e8e8e8";
   const uf = coberturaData.estados.find((e) => e.sigla === sigla);
   if (!uf) return "#e8e8e8";
-  const { candidatos_identificados: ci, reconsulta_oficial: ro } = uf;
-  if (ci === 0) return "#e8e8e8";                  // not explored
-  if (ro >= 10) return "#1b5e20";                   // MG: deep green
-  if (ro >= 3) return "#388e3c";                     // SP: medium green
-  if (ro >= 1) return "#66bb6a";                     // SP: light green
-  return "#fff3cd";                                   // identified, pending official
+  const { candidatos_identificados: ci, reconsulta_oficial: ro, status_publico: sp, rotas_oficiais_inventariadas: ri } = uf;
+  if (sp === "rotas_inventariadas") return "#4a86c8";   // blue for routes inventoried
+  if (ci === 0) return "#e8e8e8";                       // not explored
+  if (ro >= 10) return "#1b5e20";                       // MG: deep green
+  if (ro >= 3) return "#388e3c";                        // SP: medium green
+  if (ro >= 1) return "#66bb6a";                        // SP: light green
+  return "#fff3cd";                                      // identified, pending official
 }
 
 function getUfBorderColor(sigla) {
   const uf = coberturaData?.estados.find((e) => e.sigla === sigla);
-  if (!uf || uf.candidatos_identificados === 0) return "#ccc";
-  return "#1b5e20";
+  if (!uf) return "#ccc";
+  if (uf.status_publico === "rotas_inventariadas") return "#2a5a8a";
+  if (uf.candidatos_identificados > 0) return "#1b5e20";
+  return "#ccc";
 }
 
 // Equirectangular projection for Brazil
@@ -709,10 +712,11 @@ function renderBrazilMap() {
     ctx.stroke();
   });
 
-  // Draw state labels (for SP, MG)
+  // Draw state labels
+  const labelUfs = ["SP", "MG", "PR", "SC", "RS", "RJ", "ES"];
   geoData.features.forEach((feat) => {
     const sigla = feat.properties.sigla;
-    if (sigla !== "SP" && sigla !== "MG") return;
+    if (!labelUfs.includes(sigla)) return;
     const centroid = getCentroid(feat.geometry);
     if (!centroid) return;
     const [cx, cy] = projectPoint(centroid[0], centroid[1], w, h);
@@ -723,8 +727,12 @@ function renderBrazilMap() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#fff";
-    // Draw label background
-    const text = `${sigla}: ${uf.candidatos_identificados} id, ${uf.reconsulta_oficial} of`;
+    let text;
+    if (uf.status_publico === "rotas_inventariadas") {
+      text = `${sigla}: ${uf.rotas_oficiais_inventariadas} rotas`;
+    } else {
+      text = `${sigla}: ${uf.candidatos_identificados} id, ${uf.reconsulta_oficial} of`;
+    }
     const metrics = ctx.measureText(text);
     const pad = 4;
     const tw = metrics.width + pad * 2;
@@ -851,10 +859,27 @@ function showTooltip(clientX, clientY, uf) {
   const nome = uf.nome || sigla;
   const ci = uf.candidatos_identificados || 0;
   const ro = uf.reconsulta_oficial || 0;
+  const ri = uf.rotas_oficiais_inventariadas || 0;
+  const status = uf.status_publico || "nao_incluida";
+
+  let bodyHtml;
+  if (status === "candidatos_identificados") {
+    bodyHtml = `
+      <span>Candidatos identificados: <strong>${ci}</strong></span>
+      <span>Reconsultas oficiais: <strong>${ro}</strong></span>
+    `;
+  } else if (status === "rotas_inventariadas") {
+    bodyHtml = `
+      <span>Rotas oficiais inventariadas: <strong>${ri}</strong></span>
+      <span>Rota principal: ${escapeHtml(uf.rota_principal || "não informada")}</span>
+    `;
+  } else {
+    bodyHtml = `<span>UF ainda não incluída na etapa estadual.</span>`;
+  }
+
   tooltip.innerHTML = `
     <strong>${escapeHtml(nome)} (${escapeHtml(uf.sigla)})</strong>
-    <span>Candidatos identificados: <strong>${ci}</strong></span>
-    <span>Reconsultas oficiais: <strong>${ro}</strong></span>
+    ${bodyHtml}
   `;
   tooltip.hidden = false;
   // Position relative to container
@@ -862,7 +887,7 @@ function showTooltip(clientX, clientY, uf) {
   const cr = container.getBoundingClientRect();
   let tx = clientX - cr.left + 12;
   let ty = clientY - cr.top - 10;
-  if (tx + 200 > cr.width) tx = clientX - cr.left - 210;
+  if (tx + 260 > cr.width) tx = clientX - cr.left - 270;
   if (ty < 0) ty = 4;
   tooltip.style.left = tx + "px";
   tooltip.style.top = ty + "px";
@@ -877,8 +902,9 @@ function renderMapLegend() {
   const legend = byId("mapLegend");
   if (!legend) return;
   legend.innerHTML = `
-    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#e8e8e8"></span>Sem varredura (25 UFs)</div>
-    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#66bb6a"></span>Candidatos identificados + reconsulta oficial (SP: 50 id, 3 of)</div>
+    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#e8e8e8"></span>Não incluída (20 UFs)</div>
+    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#4a86c8"></span>Rotas oficiais inventariadas (PR, SC, RS, RJ, ES)</div>
+    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#66bb6a"></span>Candidatos identificados (SP: 50 id, 3 of)</div>
     <div class="map-legend__item"><span class="map-legend__swatch" style="background:#1b5e20"></span>Maior cobertura na trilha (MG: 46 id, 10 of)</div>
   `;
 }
@@ -888,18 +914,35 @@ function renderCoberturaCards() {
   const estados = coberturaData.estados;
   const totalCi = estados.reduce((s, e) => s + e.candidatos_identificados, 0);
   const totalRo = estados.reduce((s, e) => s + e.reconsulta_oficial, 0);
-  const ufsAtivas = estados.filter((e) => e.candidatos_identificados > 0).length;
+  const totalRi = estados.reduce((s, e) => s + (e.rotas_oficiais_inventariadas || 0), 0);
+  const ufsNaTrilha = estados.filter((e) => e.candidatos_identificados > 0 || (e.rotas_oficiais_inventariadas || 0) > 0).length;
 
   byId("totalCandidatos").textContent = totalCi;
   byId("totalReconsultas").textContent = totalRo;
-  byId("totalUfsCobertas").textContent = ufsAtivas;
+  byId("totalUfsTrilha").textContent = ufsNaTrilha;
+  byId("totalRotasInventariadas").textContent = totalRi;
 }
 
 function renderUfCards() {
   const container = byId("coberturaUfCards");
   if (!container || !coberturaData) return;
-  const ativos = coberturaData.estados.filter((e) => e.candidatos_identificados > 0);
+  const ativos = coberturaData.estados.filter(
+    (e) => e.candidatos_identificados > 0 || (e.rotas_oficiais_inventariadas || 0) > 0
+  );
   const cards = ativos.map((uf) => {
+    if (uf.status_publico === "rotas_inventariadas") {
+      const colorClass = "card-uf--rotas";
+      return `
+        <article class="card-uf ${colorClass}">
+          <span class="card-uf__sigla">${escapeHtml(uf.sigla)}</span>
+          <div class="card-uf__info">
+            <strong>${escapeHtml(uf.nome)}</strong>
+            <span>${uf.rotas_oficiais_inventariadas} rotas oficiais inventariadas</span>
+            <span>Rota: ${escapeHtml(uf.rota_principal || "—")}</span>
+          </div>
+        </article>
+      `;
+    }
     const level = uf.reconsulta_oficial >= 10 ? "alta" : uf.reconsulta_oficial >= 3 ? "media" : uf.reconsulta_oficial >= 1 ? "inicial" : "identificados";
     const colorClass = `card-uf--${level}`;
     return `
