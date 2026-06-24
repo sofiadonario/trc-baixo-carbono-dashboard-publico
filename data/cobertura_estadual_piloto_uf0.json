@@ -1,0 +1,33 @@
+{
+  "descricao": "Cobertura estadual piloto — SP e MG (UF-0)",
+  "metodologia": "Trilha de identificação documental exploratória em atas de órgãos ambientais estaduais (SP: CETESB; MG: SEMAD/COPAM). Os candidatos foram identificados por varredura de atas públicas; destes, parte foi submetida a reconsulta oficial via portal da assembleia legislativa ou API oficial. Demais UFs sem varredura realizada nesta fase piloto.",
+  "estados": [
+    {"sigla": "AC", "nome": "Acre", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "AL", "nome": "Alagoas", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "AP", "nome": "Amapá", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "AM", "nome": "Amazonas", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "BA", "nome": "Bahia", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "CE", "nome": "Ceará", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "DF", "nome": "Distrito Federal", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "ES", "nome": "Espírito Santo", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "GO", "nome": "Goiás", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "MA", "nome": "Maranhão", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "MT", "nome": "Mato Grosso", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "MS", "nome": "Mato Grosso do Sul", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "MG", "nome": "Minas Gerais", "candidatos_identificados": 46, "reconsulta_oficial": 10},
+    {"sigla": "PA", "nome": "Pará", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "PB", "nome": "Paraíba", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "PR", "nome": "Paraná", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "PE", "nome": "Pernambuco", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "PI", "nome": "Piauí", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "RJ", "nome": "Rio de Janeiro", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "RN", "nome": "Rio Grande do Norte", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "RS", "nome": "Rio Grande do Sul", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "RO", "nome": "Rondônia", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "RR", "nome": "Roraima", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "SC", "nome": "Santa Catarina", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "SP", "nome": "São Paulo", "candidatos_identificados": 50, "reconsulta_oficial": 3},
+    {"sigla": "SE", "nome": "Sergipe", "candidatos_identificados": 0, "reconsulta_oficial": 0},
+    {"sigla": "TO", "nome": "Tocantins", "candidatos_identificados": 0, "reconsulta_oficial": 0}
+  ]
+}

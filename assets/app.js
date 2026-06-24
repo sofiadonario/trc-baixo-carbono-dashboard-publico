@@ -28,13 +28,13 @@ const labels = {
   sobreposicao_tematica_com_matriz_principal_e_cobertura_ampliada: "Sobreposição com submatriz e ampliada",
   sem_relacao_normativa_identificada: "Sem relação identificada",
   tema_emergente_sem_norma_correspondente_identificada: "Tema emergente",
-  checklist_inicial_criado_pendente_revisao_material: "Checklist criado",
-  manter_em_quarentena_metodologica: "Em análise metodológica",
-  fora_do_fluxo_curto_contextual: "Registro contextual",
-  fora_do_fluxo_curto_por_inconsistencia_tematica: "Inconsistência temática",
-  pendente_validacao_humana: "Validação humana",
-  bloqueado_pendente_ato_direto: "Ato direto necessário",
-  preparacao_pacote_3_incompleta_pendente_retificacao: "Retificação necessária",
+  checklist_inicial_criado_pendente_revisao_material: "Checklist criado; revisão material pendente",
+  manter_em_quarentena_metodologica: "Quarentena metodológica",
+  fora_do_fluxo_curto_contextual: "Fora do fluxo curto — contextual",
+  fora_do_fluxo_curto_por_inconsistencia_tematica: "Fora do fluxo — inconsistência temática",
+  pendente_validacao_humana: "Validação humana pendente",
+  bloqueado_pendente_ato_direto: "Bloqueado — ato direto pendente",
+  preparacao_pacote_3_incompleta_pendente_retificacao: "Pré-Pacote 3 — retificação pendente",
 };
 
 const byId = (id) => document.getElementById(id);
@@ -257,6 +257,16 @@ function renderStaticSections(data) {
       <td>${escapeHtml(pretty(item.status_metodologico))}</td>
     </tr>
   `).join("");
+
+  const summary = data.federal.fechamento.sumario;
+  renderBars("funnelBars", {
+    checklist_inicial_criado_pendente_revisao_material: summary.registros_aptos_P2,
+    manter_em_quarentena_metodologica: summary.registros_quarentena,
+    bloqueado_pendente_ato_direto: summary.registros_bloqueados,
+    fora_do_fluxo_curto_contextual: summary.registros_fora_fluxo,
+    pendente_validacao_humana: summary.registros_pendentes_humanos,
+    preparacao_pacote_3_incompleta_pendente_retificacao: summary.registros_pre_pacote_3,
+  }, 61);
 
   renderBars("yearBars", countBy(data.camara.radar, (item) => item.ano), 115);
   renderBars("classBars", countBy(data.camara.radar, (item) => item.classe_relevancia), 152);
@@ -613,39 +623,297 @@ function renderInteiroTeorTable(data) {
 }
 
 // ──────────────────────────────────────────
-// COBERTURA NORMTIVA FEDERAL AMPLIADA
+// COBERTURA ESTADUAL PILOTO — Mapa do Brasil
 // ──────────────────────────────────────────
 
-function renderCoberturaAmpliada(data) {
-  const records = data.federal.cobertura_ampliada;
-  // Group by eixo_tematico
-  const groups = {};
-  records.forEach((item) => {
-    const eixo = pretty(item.eixo_tematico) || "Sem eixo";
-    if (!groups[eixo]) groups[eixo] = 0;
-    groups[eixo]++;
+const COBERTURA_URL = "data/cobertura_estadual_piloto_uf0.json";
+const GEO_URL = "data/brazil_states_simplified.geojson";
+
+let coberturaData = null;
+let geoData = null;
+
+// UF colors based on coverage intensity
+function getUfColor(sigla) {
+  if (!coberturaData) return "#e8e8e8";
+  const uf = coberturaData.estados.find((e) => e.sigla === sigla);
+  if (!uf) return "#e8e8e8";
+  const { candidatos_identificados: ci, reconsulta_oficial: ro } = uf;
+  if (ci === 0) return "#e8e8e8";                  // not explored
+  if (ro >= 10) return "#1b5e20";                   // MG: deep green
+  if (ro >= 3) return "#388e3c";                     // SP: medium green
+  if (ro >= 1) return "#66bb6a";                     // SP: light green
+  return "#fff3cd";                                   // identified, pending official
+}
+
+function getUfBorderColor(sigla) {
+  const uf = coberturaData?.estados.find((e) => e.sigla === sigla);
+  if (!uf || uf.candidatos_identificados === 0) return "#ccc";
+  return "#1b5e20";
+}
+
+// Equirectangular projection for Brazil
+function projectPoint(lon, lat, width, height) {
+  // Brazil bounds: lon [-74, -34], lat [-34, 5.5]
+  const x = (lon + 74) / 40 * width;
+  const y = (5.5 - lat) / 39.5 * height;
+  return [x, y];
+}
+
+function renderBrazilMap() {
+  const canvas = byId("brazilMap");
+  const container = byId("mapContainer");
+  if (!canvas || !geoData || !coberturaData) return;
+
+  const rect = container.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const w = rect.width || Math.min(760, window.innerWidth - 60);
+  const h = Math.round(w * 0.95); // Brazil aspect ratio
+
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
+  canvas.dataset.width = w;
+  canvas.dataset.height = h;
+
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  // Build UF lookup
+  const ufMap = {};
+  coberturaData.estados.forEach((e) => { ufMap[e.sigla] = e; });
+
+  // Project coordinates helper
+  function projectRing(ring) {
+    return ring.map(([lon, lat]) => projectPoint(lon, lat, w, h));
+  }
+
+  // Draw states
+  geoData.features.forEach((feat) => {
+    const sigla = feat.properties.sigla;
+    const geom = feat.geometry;
+    const fillColor = getUfColor(sigla);
+    const borderColor = getUfBorderColor(sigla);
+
+    ctx.beginPath();
+    if (geom.type === "Polygon") {
+      drawPolygon(ctx, geom.coordinates, w, h);
+    } else if (geom.type === "MultiPolygon") {
+      geom.coordinates.forEach((poly) => drawPolygon(ctx, poly, w, h));
+    }
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
   });
 
-  // Render eixo summary bars
-  renderBars("coberturaEixos", groups, 61);
+  // Draw state labels (for SP, MG)
+  geoData.features.forEach((feat) => {
+    const sigla = feat.properties.sigla;
+    if (sigla !== "SP" && sigla !== "MG") return;
+    const centroid = getCentroid(feat.geometry);
+    if (!centroid) return;
+    const [cx, cy] = projectPoint(centroid[0], centroid[1], w, h);
+    const uf = ufMap[sigla];
+    if (!uf) return;
 
-  // Render table sorted by eixo, then title
-  const sorted = [...records].sort((a, b) => {
-    const ea = pretty(a.eixo_tematico) || "";
-    const eb = pretty(b.eixo_tematico) || "";
-    if (ea !== eb) return ea.localeCompare(eb, "pt-BR");
-    return (a.titulo || "").localeCompare(b.titulo || "", "pt-BR");
+    ctx.font = "bold 11px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#fff";
+    // Draw label background
+    const text = `${sigla}: ${uf.candidatos_identificados} id, ${uf.reconsulta_oficial} of`;
+    const metrics = ctx.measureText(text);
+    const pad = 4;
+    const tw = metrics.width + pad * 2;
+    const th = 18;
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.roundRect ? ctx.roundRect(cx - tw/2, cy - th/2, tw, th, 4) : ctx.rect(cx - tw/2, cy - th/2, tw, th);
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.fillText(text, cx, cy);
   });
 
-  byId("coberturaTableBody").innerHTML = sorted.map((item) => `
-    <tr>
-      <td>${escapeHtml(item.id)}</td>
-      <td>${escapeHtml(item.titulo)}</td>
-      <td>${escapeHtml(item.ano)}</td>
-      <td>${escapeHtml(pretty(item.eixo_tematico))}</td>
-      <td>${escapeHtml(item.orgao || item.fonte || "")}</td>
-    </tr>
-  `).join("");
+  // Build off-screen canvas for hit testing
+  const hitCanvas = document.createElement("canvas");
+  hitCanvas.width = w;
+  hitCanvas.height = h;
+  const hitCtx = hitCanvas.getContext("2d");
+
+  // Assign unique index color for each feature
+  const hitColors = [];
+  geoData.features.forEach((feat, idx) => {
+    const r = (idx >> 16) & 0xff;
+    const g = (idx >> 8) & 0xff;
+    const b = idx & 0xff;
+    hitColors.push(`rgb(${r},${g},${b})`);
+
+    const sigla = feat.properties.sigla;
+    const geom = feat.geometry;
+
+    hitCtx.beginPath();
+    if (geom.type === "Polygon") {
+      drawPolygon(hitCtx, geom.coordinates, w, h);
+    } else if (geom.type === "MultiPolygon") {
+      geom.coordinates.forEach((poly) => drawPolygon(hitCtx, poly, w, h));
+    }
+    hitCtx.closePath();
+    hitCtx.fillStyle = hitColors[idx];
+    hitCtx.fill();
+  });
+
+  // Mouse interaction
+  function handleMapMove(e) {
+    const r = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left;
+    const my = e.clientY - r.top;
+    const scaleX = w / r.width;
+    const scaleY = h / r.height;
+    const px = Math.round(mx * scaleX);
+    const py = Math.round(my * scaleY);
+
+    if (px < 0 || px >= w || py < 0 || py >= h) {
+      hideTooltip();
+      return;
+    }
+
+    const pixel = hitCtx.getImageData(px, py, 1, 1).data;
+    const rVal = pixel[0], gVal = pixel[1], bVal = pixel[2];
+    const idx = (rVal << 16) | (gVal << 8) | bVal;
+
+    if (idx < 0 || idx >= geoData.features.length) {
+      hideTooltip();
+      return;
+    }
+
+    const feat = geoData.features[idx];
+    const sigla = feat.properties.sigla;
+    const uf = ufMap[sigla];
+    if (!uf) { hideTooltip(); return; }
+
+    showTooltip(e.clientX, e.clientY, uf);
+  }
+
+  function handleMapLeave() {
+    hideTooltip();
+  }
+
+  canvas.addEventListener("mousemove", handleMapMove);
+  canvas.addEventListener("mouseleave", handleMapLeave);
+  canvas.addEventListener("touchstart", (e) => {
+    const touch = e.touches[0];
+    const me = new MouseEvent("mousemove", { clientX: touch.clientX, clientY: touch.clientY });
+    handleMapMove(me);
+  }, { passive: true });
+
+  // Render legend
+  renderMapLegend();
+
+  // Render UF cards
+  renderUfCards();
+  renderCoberturaCards();
+}
+
+function drawPolygon(ctx, rings, w, h) {
+  rings.forEach((ring, ri) => {
+    const projected = ring.map(([lon, lat]) => projectPoint(lon, lat, w, h));
+    projected.forEach(([x, y], pi) => {
+      if (ri === 0 && pi === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+  });
+}
+
+function getCentroid(geometry) {
+  // Simple centroid: average of all coordinates
+  let sumX = 0, sumY = 0, count = 0;
+  function addRing(ring) {
+    ring.forEach(([lon, lat]) => { sumX += lon; sumY += lat; count++; });
+  }
+  if (geometry.type === "Polygon") {
+    geometry.coordinates.forEach(addRing);
+  } else if (geometry.type === "MultiPolygon") {
+    geometry.coordinates.forEach((poly) => poly.forEach(addRing));
+  }
+  if (count === 0) return null;
+  return [sumX / count, sumY / count];
+}
+
+function showTooltip(clientX, clientY, uf) {
+  const tooltip = byId("mapTooltip");
+  if (!tooltip) return;
+  const sigla = uf.sigla || uf.nome?.slice(0, 2).toUpperCase();
+  const nome = uf.nome || sigla;
+  const ci = uf.candidatos_identificados || 0;
+  const ro = uf.reconsulta_oficial || 0;
+  tooltip.innerHTML = `
+    <strong>${escapeHtml(nome)} (${escapeHtml(uf.sigla)})</strong>
+    <span>Candidatos identificados: <strong>${ci}</strong></span>
+    <span>Reconsultas oficiais: <strong>${ro}</strong></span>
+  `;
+  tooltip.hidden = false;
+  // Position relative to container
+  const container = byId("mapContainer");
+  const cr = container.getBoundingClientRect();
+  let tx = clientX - cr.left + 12;
+  let ty = clientY - cr.top - 10;
+  if (tx + 200 > cr.width) tx = clientX - cr.left - 210;
+  if (ty < 0) ty = 4;
+  tooltip.style.left = tx + "px";
+  tooltip.style.top = ty + "px";
+}
+
+function hideTooltip() {
+  const tooltip = byId("mapTooltip");
+  if (tooltip) tooltip.hidden = true;
+}
+
+function renderMapLegend() {
+  const legend = byId("mapLegend");
+  if (!legend) return;
+  legend.innerHTML = `
+    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#e8e8e8"></span>Sem varredura (25 UFs)</div>
+    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#66bb6a"></span>Candidatos identificados + reconsulta oficial (SP: 50 id, 3 of)</div>
+    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#1b5e20"></span>Maior cobertura na trilha (MG: 46 id, 10 of)</div>
+  `;
+}
+
+function renderCoberturaCards() {
+  if (!coberturaData) return;
+  const estados = coberturaData.estados;
+  const totalCi = estados.reduce((s, e) => s + e.candidatos_identificados, 0);
+  const totalRo = estados.reduce((s, e) => s + e.reconsulta_oficial, 0);
+  const ufsAtivas = estados.filter((e) => e.candidatos_identificados > 0).length;
+
+  byId("totalCandidatos").textContent = totalCi;
+  byId("totalReconsultas").textContent = totalRo;
+  byId("totalUfsCobertas").textContent = ufsAtivas;
+}
+
+function renderUfCards() {
+  const container = byId("coberturaUfCards");
+  if (!container || !coberturaData) return;
+  const ativos = coberturaData.estados.filter((e) => e.candidatos_identificados > 0);
+  const cards = ativos.map((uf) => {
+    const level = uf.reconsulta_oficial >= 10 ? "alta" : uf.reconsulta_oficial >= 3 ? "media" : uf.reconsulta_oficial >= 1 ? "inicial" : "identificados";
+    const colorClass = `card-uf--${level}`;
+    return `
+      <article class="card-uf ${colorClass}">
+        <span class="card-uf__sigla">${escapeHtml(uf.sigla)}</span>
+        <div class="card-uf__info">
+          <strong>${escapeHtml(uf.nome)}</strong>
+          <span>${uf.candidatos_identificados} candidatos identificados</span>
+          <span>${uf.reconsulta_oficial} reconsultas oficiais</span>
+        </div>
+      </article>
+    `;
+  }).join("");
+  container.innerHTML = cards;
 }
 
 // ──────────────────────────────────────────
@@ -665,11 +933,25 @@ async function init() {
     renderFederalFullTable(state.data);
     renderCamaraTable(state.data);
     renderInteiroTeorTable(state.data);
-    renderCoberturaAmpliada(state.data);
     renderGapsTable(state.data);
   } catch (error) {
     byId("loadError").hidden = false;
     console.error("Falha ao carregar dados derivados do dashboard:", error);
+  }
+
+  // Load cobertura estadual data in parallel
+  try {
+    const [cobResp, geoResp] = await Promise.all([
+      fetch(COBERTURA_URL),
+      fetch(GEO_URL),
+    ]);
+    if (!cobResp.ok) throw new Error(`Cobertura HTTP ${cobResp.status}`);
+    if (!geoResp.ok) throw new Error(`Geo HTTP ${geoResp.status}`);
+    coberturaData = await cobResp.json();
+    geoData = await geoResp.json();
+    renderBrazilMap();
+  } catch (error) {
+    console.error("Falha ao carregar dados de cobertura estadual:", error);
   }
 }
 

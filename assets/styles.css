@@ -258,7 +258,7 @@ td a { color: var(--blue); font-weight: 750; text-decoration: none; }
 .filters--inline { margin-top: 0; }
 
 .status-pill { flex: 0 0 auto; padding: 6px 10px; border-radius: 999px; color: #245441; background: var(--green-soft); font-size: .7rem; font-weight: 800; }
-.status-pill--info { color: #1f5a77; background: #daeaf5; }
+.status-pill--warning { color: #70450c; background: var(--amber-soft); }
 .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .insight-card { padding: 19px; border: 1px solid var(--line); border-radius: 14px; background: white; }
 .insight-card--alert { border-color: #e3b5af; background: #fff7f5; }
@@ -347,8 +347,90 @@ td a { color: var(--blue); font-weight: 750; text-decoration: none; }
 .br-marker strong, .br-marker small { display: block; }
 .br-marker small { color: #d8e9e1; }
 .panel--provenance td:last-child { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .68rem; overflow-wrap: anywhere; }
+.status-pill--info { background: #dceff5; color: #1a6d7c; }
 .load-error { margin-top: 22px; padding: 18px; border-radius: 12px; color: #762c25; background: #fde9e6; }
 .page-footer { padding: 24px 28px 36px; color: var(--muted); text-align: center; font-size: .75rem; }
+
+/* ─── Cobertura estadual piloto — Mapa ─── */
+.metric-grid--two { grid-template-columns: repeat(2, 1fr); }
+.map-container {
+  margin: 24px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #f0f2ef;
+  box-shadow: var(--shadow);
+}
+.brazil-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: crosshair;
+  touch-action: none;
+}
+.map-tooltip {
+  position: absolute;
+  z-index: 30;
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: rgba(20, 35, 30, .92);
+  color: #f0f7f3;
+  font-size: .78rem;
+  line-height: 1.5;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+  transition: opacity .12s;
+}
+.map-tooltip strong { display: block; font-size: .85rem; margin-bottom: 3px; color: #b9d66b; }
+.map-tooltip span { display: block; }
+.map-tooltip span strong { display: inline; font-size: inherit; color: #fff; }
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 6px 0 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--surface-strong);
+  font-size: .75rem;
+  color: var(--muted);
+}
+.map-legend__item { display: flex; align-items: center; gap: 6px; }
+.map-legend__swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+.card-uf {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+}
+.card-uf__sigla {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.card-uf--alta .card-uf__sigla { background: #1b5e20; }
+.card-uf--media .card-uf__sigla { background: #388e3c; }
+.card-uf--inicial .card-uf__sigla { background: #66bb6a; }
+.card-uf--identificados .card-uf__sigla { background: #d4a843; }
+.card-uf__info strong { display: block; font-size: .92rem; }
+.card-uf__info span { display: block; color: var(--muted); font-size: .78rem; }
 
 @media (max-width: 1000px) {
   .metric-grid--hero { grid-template-columns: repeat(2, 1fr); }
@@ -360,7 +442,7 @@ td a { color: var(--blue); font-weight: 750; text-decoration: none; }
   .hero { padding: 44px 18px 62px; }
   main { padding: 0 14px 40px; }
   .panel { padding: 20px 16px; }
-  .metric-grid--hero, .metric-grid--three, .insight-grid, .split-grid, .geo-layout { grid-template-columns: 1fr; }
+  .metric-grid--hero, .metric-grid--three, .metric-grid--two, .insight-grid, .split-grid, .geo-layout { grid-template-columns: 1fr; }
   .filters { grid-template-columns: 1fr; }
   .filter--search, .filter--wide { grid-column: auto; }
   .section-heading { flex-direction: column; }
@@ -369,4 +451,7 @@ td a { color: var(--blue); font-weight: 750; text-decoration: none; }
   .result-summary { flex-direction: column; }
   .pagination { flex-direction: column; align-items: stretch; text-align: center; }
   .pagination__btn { min-width: 0; }
+  .card-uf { flex-direction: column; text-align: center; }
+  .card-uf__sigla { margin: 0 auto; }
+  .map-tooltip { font-size: .72rem; }
 }
