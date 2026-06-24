@@ -713,7 +713,7 @@ function renderBrazilMap() {
   });
 
   // Draw state labels
-  const labelUfs = ["SP", "MG", "PR", "SC", "RS", "RJ", "ES"];
+  const labelUfs = ["SP", "MG"];
   geoData.features.forEach((feat) => {
     const sigla = feat.properties.sigla;
     if (!labelUfs.includes(sigla)) return;
@@ -902,8 +902,7 @@ function renderMapLegend() {
   const legend = byId("mapLegend");
   if (!legend) return;
   legend.innerHTML = `
-    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#e8e8e8"></span>Não incluída (20 UFs)</div>
-    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#4a86c8"></span>Rotas oficiais inventariadas (PR, SC, RS, RJ, ES)</div>
+    <div class="map-legend__item"><span class="map-legend__swatch" style="background:#4a86c8"></span>Rotas oficiais inventariadas (25 UFs)</div>
     <div class="map-legend__item"><span class="map-legend__swatch" style="background:#66bb6a"></span>Candidatos identificados (SP: 50 id, 3 of)</div>
     <div class="map-legend__item"><span class="map-legend__swatch" style="background:#1b5e20"></span>Maior cobertura na trilha (MG: 46 id, 10 of)</div>
   `;
